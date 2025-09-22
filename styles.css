@@ -1,0 +1,290 @@
+/* Enhanced Styles for Eastern Sojourner */
+
+/* Custom styles for the slideshow and general look */
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+}
+
+.slideshow-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    animation: kenburns 25s infinite;
+}
+
+/* Ken Burns effect for subtle motion */
+@keyframes kenburns {
+    0%, 100% { 
+        transform: scale(1) translate(0, 0); 
+    }
+    25% { 
+        transform: scale(1.08) translate(-10px, 5px); 
+    }
+    50% { 
+        transform: scale(1.12) translate(5px, -10px); 
+    }
+    75% { 
+        transform: scale(1.06) translate(-5px, 8px); 
+    }
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.3) 50%, rgba(0,0,0,0.8) 100%);
+}
+
+/* Glass morphism card effect */
+.glass-card {
+    background: rgba(30, 41, 59, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+/* Floating animation */
+.floating-animation {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-10px); 
+    }
+}
+
+/* Pulse glow effect */
+.pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); 
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); 
+    }
+}
+
+/* Gradient text effect */
+.gradient-text {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Stats counter styling */
+.stats-counter {
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: #6366f1;
+}
+
+/* Testimonial card styling */
+.testimonial-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* Parallax background effect */
+.parallax-bg {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+/* Navigation underline animation */
+nav a .group-hover\:w-full {
+    transition: width 0.3s ease;
+}
+
+/* Hover effects for destination cards */
+.group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+}
+
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1;
+}
+
+/* Social media icon hover effects */
+.hover\:scale-110:hover {
+    transform: scale(1.1);
+}
+
+/* Button hover effects */
+.transform.hover\:scale-105:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile responsiveness fixes */
+@media (max-width: 768px) {
+    .slideshow-container {
+        height: 100vh;
+    }
+    
+    .slide {
+        background-attachment: scroll;
+    }
+    
+    .parallax-bg {
+        background-attachment: scroll;
+    }
+    
+    .stats-counter {
+        font-size: 2rem;
+    }
+    
+    h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .gradient-text {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animation delays for staggered effects */
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
+
+/* Focus states for accessibility */
+button:focus,
+a:focus,
+input:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* Loading animation for images */
+img {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+img.loaded {
+    opacity: 1;
+}
+
+/* Newsletter input styling */
+input::placeholder {
+    color: rgba(156, 163, 175, 0.8);
+}
+
+input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Enhanced mobile menu */
+#mobile-menu {
+    backdrop-filter: blur(15px);
+    background: rgba(30, 41, 59, 0.95);
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Print styles */
+@media print {
+    .slideshow-container,
+    nav,
+    footer {
+        display: none;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .glass-card {
+        background: rgba(30, 41, 59, 0.8);
+        border: 2px solid rgba(148, 163, 184, 0.5);
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .slide {
+        animation: none;
+    }
+    
+    .floating-animation {
+        animation: none;
+    }
+    
+    .pulse-glow {
+        animation: none;
+    }
+    
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
