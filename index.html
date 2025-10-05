@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GM40D99YPE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GM40D99YPE');
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eastern Sojourner - Discover Northeast India</title>
@@ -14,6 +23,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="states.css">
 
 </head>
 <body class="bg-gray-900 text-gray-100">
@@ -31,10 +41,38 @@
                         Home
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
                     </a>
-                    <a href="#destinations" class="text-gray-300 hover:text-white transition duration-300 relative group">
-                        Destinations
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
+                    <div class="dropdown relative">
+                        <a href="#destinations" class="text-gray-300 hover:text-white transition duration-300 relative group flex items-center">
+                            Destinations <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <div class="dropdown-menu glass-card">
+                            <a href="arunachal-pradesh.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Arunachal Pradesh
+                            </a>
+                            <a href="assam.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Assam
+                            </a>
+                            <a href="manipur.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Manipur
+                            </a>
+                            <a href="meghalaya.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Meghalaya
+                            </a>
+                            <a href="mizoram.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Mizoram
+                            </a>
+                            <a href="nagaland.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Nagaland
+                            </a>
+                            <a href="sikkim.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Sikkim
+                            </a>
+                            <a href="tripura.html" class="block px-4 py-3 text-gray-300 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Tripura
+                            </a>
+                        </div>
+                    </div>
                     <a href="#about" class="text-gray-300 hover:text-white transition duration-300 relative group">
                         About
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
@@ -148,9 +186,7 @@
                             <p class="text-gray-400 mb-4">The jewel of Northeast India, known for its rich culture, traditional arts, and breathtaking scenic beauty.</p>
                             <div class="flex justify-between items-center">
                                 <span class="text-indigo-400 font-semibold">From ₹15,000</span>
-                                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">
-                                    Explore
-                                </button>
+                                <a href="manipur.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -168,9 +204,7 @@
                             <p class="text-gray-400 mb-4">Land of rolling hills and vibrant culture, offering pristine landscapes and warm hospitality.</p>
                             <div class="flex justify-between items-center">
                                 <span class="text-indigo-400 font-semibold">From ₹12,000</span>
-                                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">
-                                    Explore
-                                </button>
+                                <a href="mizoram.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -188,9 +222,7 @@
                             <p class="text-gray-400 mb-4">Gateway to the Northeast, famous for tea gardens, wildlife, and the mighty Brahmaputra River.</p>
                             <div class="flex justify-between items-center">
                                 <span class="text-indigo-400 font-semibold">From ₹10,000</span>
-                                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">
-                                    Explore
-                                </button>
+                                <a href="assam.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">Explore</a>
                             </div>
                         </div>
                     </div>
