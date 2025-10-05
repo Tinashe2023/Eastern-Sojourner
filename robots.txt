@@ -1,0 +1,6 @@
+# Allow all search engine bots
+User-agent: *
+Allow: /
+
+# Location of the sitemap
+Sitemap: https://tinashe2023.github.io/Eastern-Sojourner/sitemap.xml
