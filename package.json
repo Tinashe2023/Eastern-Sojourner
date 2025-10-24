@@ -1,0 +1,30 @@
+{
+  "name": "eastern-sojourner",
+  "version": "1.0.0",
+  "description": "Website files",
+  "keywords": [
+    "North",
+    "East",
+    "India"
+  ],
+  "homepage": "https://github.com/Tinashe2023/Eastern-Sojourner#readme",
+  "bugs": {
+    "url": "https://github.com/Tinashe2023/Eastern-Sojourner/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tinashe2023/Eastern-Sojourner.git"
+  },
+  "license": "MIT",
+  "author": "Tinashe Hando",
+  "type": "commonjs",
+  "main": "script.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16"
+  }
+}
