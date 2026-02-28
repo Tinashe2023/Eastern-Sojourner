@@ -433,40 +433,69 @@
 
             const sosBtn = document.getElementById('sos-button');
             sosBtn.disabled = true;
-            sosBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>SENDING...';
+            sosBtn.innerHTML = '<i class="fab fa-whatsapp mr-2"></i>OPENING WHATSAPP...';
 
             try {
-                const response = await fetch(`${API_BASE}/api/sos`, {
+                // Get current GPS from UI (or fallback)
+                const gpsText = document.getElementById('user-gps').textContent;
+                let locationString = gpsText !== '—' ? gpsText : '24.817, 93.937';
+
+                // Format the WhatsApp message
+                const emojiMap = {
+                    'medical': '🏥 Medical Emergency',
+                    'security': '🔒 Security Threat',
+                    'natural_disaster': '🌪️ Natural Disaster',
+                    'accident': '🚗 Accident',
+                    'lost': '📍 Lost / Stranded',
+                    'other': '⚠️ Other Emergency'
+                };
+
+                let waMessage = `*🚨 EASTERN SOJOURNER SOS ALERT 🚨*\n\n`;
+                waMessage += `*Type:* ${emojiMap[type] || type}\n`;
+                waMessage += `*Location:* https://maps.google.com/?q=${locationString.replace(' ', '')}\n`;
+
+                if (message.trim()) {
+                    waMessage += `*Details:* ${message.trim()}\n`;
+                }
+
+                waMessage += `\n_Please send help immediately._`;
+
+                // Tinashe's WhatsApp Number
+                const phoneNumber = '919815781860';
+
+                // Create the WhatsApp API URL
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(waMessage)}`;
+
+                // Open WhatsApp in a new tab
+                window.open(whatsappUrl, '_blank');
+
+                // Simulate backend success for the UI feed
+                fetch(`${API_BASE}/api/sos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         userId: 'dashboard-user',
                         type,
-                        gps: { lat: 24.817, lng: 93.9368 },
+                        gps: { lat: 24.817, lng: 93.937 }, // Mock for feed
                         timestamp: new Date().toISOString(),
                         message
                     })
-                });
+                }).catch(e => console.log('Backend feed update silent fail'));
 
-                const result = await response.json();
+                resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-green-500/20 text-green-400';
+                resultEl.innerHTML = `<i class="fas fa-check-circle mr-1"></i> SOS triggered! WhatsApp opened.`;
+                setTimeout(refreshIncidents, 1000);
 
-                if (result.success) {
-                    resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-green-500/20 text-green-400';
-                    resultEl.innerHTML = `<i class="fas fa-check-circle mr-1"></i> ${result.data.message}<br><span class="text-xs text-gray-400">Incident ID: ${result.data.incidentId} • ETA: ${result.data.responseEta}</span>`;
-                    // Refresh incidents feed
-                    setTimeout(refreshIncidents, 500);
-                } else {
-                    resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-red-500/20 text-red-400';
-                    resultEl.innerHTML = `<i class="fas fa-times-circle mr-1"></i> ${result.message}`;
-                }
             } catch (err) {
                 resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-red-500/20 text-red-400';
-                resultEl.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Failed to send SOS — check if the backend server is running on localhost:3000';
+                resultEl.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Failed to process SOS.';
             }
 
             resultEl.classList.remove('hidden');
-            sosBtn.disabled = false;
-            sosBtn.innerHTML = '<i class="fas fa-bell mr-2"></i>SEND SOS ALERT';
+            setTimeout(() => {
+                sosBtn.disabled = false;
+                sosBtn.innerHTML = '<i class="fas fa-bell mr-2"></i>SEND SOS ALERT';
+            }, 3000);
         }
 
         // ═════════════════════════════════════════════════════════════════
