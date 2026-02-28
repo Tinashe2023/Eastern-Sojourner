@@ -46,12 +46,12 @@
  * ╚══════════════════════════════════════════════════════════════════════════╝
  */
 
-// Polyfill for crypto.getRandomValues in React Native
-import 'react-native-get-random-values';
+// NOTE: Polyfills (react-native-get-random-values, Buffer) are loaded
+// globally in App.js BEFORE this module is imported.
 
 import * as SecureStore from 'expo-secure-store';
 import { ec as EC } from 'elliptic';
-import { createHash } from 'crypto';
+import { sha256 } from 'js-sha256';
 
 // Initialize ECDSA with P-256 curve
 const ecInstance = new EC('p256');
@@ -171,8 +171,8 @@ export function buildCanonicalPayload(userId, nonce, gps, timestamp) {
  */
 export function signPayload(payload, privateKeyHex) {
     try {
-        // SHA-256 hash of the payload
-        const msgHash = createHash('sha256').update(payload).digest('hex');
+        // SHA-256 hash of the payload (pure JS — React Native compatible)
+        const msgHash = sha256(payload);
 
         // Sign with ECDSA
         const key = ecInstance.keyFromPrivate(privateKeyHex, 'hex');

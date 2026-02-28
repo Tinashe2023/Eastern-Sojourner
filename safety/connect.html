@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- QR Code Generator -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../states.css">
@@ -270,16 +270,17 @@
 
                 currentNonceId = result.data.nonceId;
 
-                // Generate QR code
+                // Generate QR code using qrcodejs
                 const qrContainer = document.getElementById('qr-code');
                 qrContainer.innerHTML = '';
-                const canvas = document.createElement('canvas');
-                await QRCode.toCanvas(canvas, result.data.qrPayload, {
+                new QRCode(qrContainer, {
+                    text: result.data.qrPayload,
                     width: 220,
-                    margin: 2,
-                    color: { dark: '#1e1b4b', light: '#ffffff' }
+                    height: 220,
+                    colorDark: '#1e1b4b',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M
                 });
-                qrContainer.appendChild(canvas);
 
                 // Show QR
                 document.getElementById('qr-loading').classList.add('hidden');
