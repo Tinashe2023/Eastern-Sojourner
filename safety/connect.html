@@ -15,7 +15,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- QR Code: uses api.qrserver.com (no JS library needed) -->
+    <!-- QR Code: qr-creator (tiny, renders to canvas, no dependencies) -->
+    <script src="https://cdn.jsdelivr.net/npm/qr-creator@1.0.0/dist/qr-creator.min.js"></script>
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../states.css">
@@ -269,17 +270,35 @@
 
                 currentNonceId = result.data.nonceId;
 
-                // Generate QR code using image API (most reliable)
+                // Generate QR code
                 const qrContainer = document.getElementById('qr-code');
                 qrContainer.innerHTML = '';
-                const qrImg = document.createElement('img');
-                const encodedPayload = encodeURIComponent(result.data.qrPayload);
-                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=1e1b4b&bgcolor=ffffff&data=${encodedPayload}`;
-                qrImg.alt = 'Safety Hub QR Code';
-                qrImg.width = 220;
-                qrImg.height = 220;
-                qrImg.style.borderRadius = '8px';
-                qrContainer.appendChild(qrImg);
+
+                // Use qr-creator (renders directly to canvas)
+                if (typeof QrCreator !== 'undefined') {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 220;
+                    canvas.height = 220;
+                    canvas.style.borderRadius = '8px';
+                    QrCreator.render({
+                        text: result.data.qrPayload,
+                        radius: 0.0,
+                        ecLevel: 'M',
+                        fill: '#1e1b4b',
+                        background: '#ffffff',
+                        size: 220
+                    }, canvas);
+                    qrContainer.appendChild(canvas);
+                } else {
+                    // Fallback: image API
+                    const qrImg = document.createElement('img');
+                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(result.data.qrPayload)}`;
+                    qrImg.alt = 'Safety Hub QR Code';
+                    qrImg.width = 220;
+                    qrImg.height = 220;
+                    qrImg.style.borderRadius = '8px';
+                    qrContainer.appendChild(qrImg);
+                }
 
                 // Show QR
                 document.getElementById('qr-loading').classList.add('hidden');
