@@ -20,6 +20,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as Location from 'expo-location';
+import { useIsFocused } from '@react-navigation/native';
 import {
     getOrCreateKeyPair,
     getUserId,
@@ -29,6 +30,7 @@ import {
 import { postVerification } from '../utils/api';
 
 export default function ScanScreen({ navigation }) {
+    const isFocused = useIsFocused();
     const [permission, requestPermission] = useCameraPermissions();
     const [scanned, setScanned] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -179,16 +181,20 @@ export default function ScanScreen({ navigation }) {
         <View style={styles.container}>
             {/* Camera View */}
             <View style={styles.cameraContainer}>
-                <CameraView
-                    style={styles.camera}
-                    barcodeScannerSettings={{
-                        barcodeTypes: ['qr'],
-                    }}
-                    onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                />
+                {isFocused ? (
+                    <CameraView
+                        style={styles.camera}
+                        barcodeScannerSettings={{
+                            barcodeTypes: ['qr'],
+                        }}
+                        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                    />
+                ) : (
+                    <View style={[styles.camera, { backgroundColor: '#000' }]} />
+                )}
 
                 {/* Scan overlay (Moved outside CameraView for SDK 54 compatibility) */}
-                <View style={[StyleSheet.absoluteFill, styles.overlay]}>
+                <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="none">
                     <View style={styles.scanFrame}>
                         <View style={[styles.corner, styles.topLeft]} />
                         <View style={[styles.corner, styles.topRight]} />
