@@ -351,6 +351,12 @@
             document.getElementById('status-waiting').classList.add('hidden');
             document.getElementById('status-verified').classList.remove('hidden');
 
+            // Save to local storage for the dashboard
+            localStorage.setItem('digital_id_connected', 'true');
+            if (data) {
+                localStorage.setItem('digital_id_data', JSON.stringify(data));
+            }
+
             const details = document.getElementById('verified-details');
             details.innerHTML = `
                 <div class="flex justify-between"><span class="text-gray-400">User ID:</span><span class="text-green-400 font-mono text-xs">${data.userId || 'N/A'}</span></div>

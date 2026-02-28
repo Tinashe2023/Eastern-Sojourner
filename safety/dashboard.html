@@ -365,6 +365,33 @@
 
         // Simulate a tourist marker
         function addTouristMarker() {
+            let lat = 24.817;
+            let lng = 93.9368;
+            let zoneName = 'Imphal Valley';
+
+            // Check local storage for actual connected ID data
+            const isConnected = localStorage.getItem('digital_id_connected') === 'true';
+            const idDataStr = localStorage.getItem('digital_id_data');
+
+            if (isConnected) {
+                if (idDataStr) {
+                    try {
+                        const data = JSON.parse(idDataStr);
+                        if (data.gps) {
+                            lat = data.gps.lat;
+                            lng = data.gps.lng;
+                        }
+                    } catch (e) {
+                        console.warn('Error parsing digital ID data:', e);
+                    }
+                }
+
+                // Update Digital ID Status panel to show connected
+                const statusEl = document.getElementById('id-status');
+                statusEl.className = 'text-sm px-2 py-1 rounded-full bg-green-500/20 text-green-400';
+                statusEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Connected (ECDSA)';
+            }
+
             const touristIcon = L.divIcon({
                 html: '<div style="background: #6366f1; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(99,102,241,0.6);"></div>',
                 className: 'tourist-marker',
@@ -372,20 +399,20 @@
                 iconAnchor: [8, 8]
             });
 
-            // Place marker at a sample tourist location (Imphal)
-            const marker = L.marker([24.817, 93.9368], { icon: touristIcon }).addTo(map);
+            // Place marker at the tourist location
+            const marker = L.marker([lat, lng], { icon: touristIcon }).addTo(map);
             marker.bindPopup(`
                 <div style="font-family: Inter, sans-serif;">
                     <h3 style="margin: 0 0 5px; font-size: 13px; font-weight: 600;">📍 Your Location</h3>
-                    <p style="margin: 0; font-size: 11px; color: #666;">Imphal, Manipur</p>
+                    <p style="margin: 0; font-size: 11px; color: #666;">${zoneName}</p>
                     <p style="margin: 3px 0 0; font-size: 11px; color: #22c55e;">● Safe Zone</p>
                 </div>
             `);
 
             // Update tourist status card
-            document.getElementById('current-zone').textContent = 'Imphal Valley';
+            document.getElementById('current-zone').textContent = zoneName;
             document.getElementById('risk-level').innerHTML = '<span class="text-green-400">● Safe</span>';
-            document.getElementById('user-gps').textContent = '24.817, 93.937';
+            document.getElementById('user-gps').textContent = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
         }
 
         // ═════════════════════════════════════════════════════════════════
