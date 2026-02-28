@@ -189,7 +189,7 @@ app.post('/api/nonce', (req, res) => {
                     type: 'EASTERN_SOJOURNER_SAFETY',
                     nonceId: nonceData.nonceId,
                     nonce: nonceData.nonce,
-                    serverUrl: `http://localhost:${PORT}`
+                    serverUrl: process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`
                 })
             }
         });

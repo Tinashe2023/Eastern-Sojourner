@@ -10,7 +10,7 @@
 // In production, this would be your deployed server URL.
 // For local development, use your machine's local IP (not localhost)
 // so the Expo app on a physical device can reach it.
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://eastern-sojourner.onrender.com';
 
 /**
  * POST the signed verification payload to the backend.
