@@ -181,27 +181,13 @@ export default function ScanScreen({ navigation }) {
         <View style={styles.container}>
             {/* Camera View */}
             <View style={styles.cameraContainer}>
-                {isFocused ? (
-                    <CameraView
-                        style={styles.camera}
-                        barcodeScannerSettings={{
-                            barcodeTypes: ['qr'],
-                        }}
-                        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                    />
-                ) : (
-                    <View style={[styles.camera, { backgroundColor: '#000' }]} />
-                )}
-
-                {/* Scan overlay (Moved outside CameraView for SDK 54 compatibility) */}
-                <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="none">
-                    <View style={styles.scanFrame}>
-                        <View style={[styles.corner, styles.topLeft]} />
-                        <View style={[styles.corner, styles.topRight]} />
-                        <View style={[styles.corner, styles.bottomLeft]} />
-                        <View style={[styles.corner, styles.bottomRight]} />
-                    </View>
-                </View>
+                <CameraView
+                    style={styles.camera}
+                    barcodeScannerSettings={{
+                        barcodeTypes: ['qr'],
+                    }}
+                    onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                />
             </View>
 
             {/* Status Bar */}
