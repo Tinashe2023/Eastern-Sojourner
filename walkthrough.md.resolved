@@ -1,0 +1,76 @@
+# Walkthrough — Smart Tourist Safety Monitoring System
+
+## What Was Built
+
+A complete **Safety Hub ecosystem** with 3 interconnected components, PQC architecture, and security documentation.
+
+---
+
+### Files Created
+
+#### Backend (`backend/`) — Node.js REST API
+| File | Purpose |
+|---|---|
+| [package.json](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/backend/package.json) | Express, cors, elliptic, uuid |
+| [crypto-utils.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/backend/crypto-utils.js) | QRNG nonce gen, ECDSA P-256 verification, nonce burn, PQC placeholders |
+| [server.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/backend/server.js) | 7 REST endpoints, geo-fence data for NE India, clean JSON responses |
+
+#### Safety Hub Web (`safety/`) — 4 files
+| File | Purpose |
+|---|---|
+| [index.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/index.html) | Landing page — hero, stats, how-it-works, security architecture |
+| [connect.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/connect.html) | QR code generation, polling for verification status |
+| [dashboard.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/dashboard.html) | Leaflet map with geo-fence polygons, SOS panel, incident feed |
+| [safety.css](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/safety.css) | Hero particles, dark Leaflet overrides, SOS pulse, QR spinner |
+
+#### Auth Mobile App (`auth-app/`) — 7 files
+| File | Purpose |
+|---|---|
+| [App.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/App.js) | Navigation stack: Biometric → Scanner → Status |
+| [screens/BiometricGate.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/screens/BiometricGate.js) | FaceID/Fingerprint gate before any crypto ops |
+| [screens/ScanScreen.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/screens/ScanScreen.js) | QR scanner → biometric re-verify → sign → POST |
+| [screens/StatusScreen.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/screens/StatusScreen.js) | Verification result with signed payload details |
+| [utils/crypto.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/utils/crypto.js) | ECDSA key gen, Secure Store, payload signing, ML-DSA placeholders |
+| [utils/api.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/utils/api.js) | HTTP client for backend communication |
+| [package.json](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/package.json) | Expo + all dependencies |
+
+#### Security & Integration
+| File | Purpose |
+|---|---|
+| [SECURITY_RESEARCH.md](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/SECURITY_RESEARCH.md) | Threat model, replay protection, PQC, QRNG, Burp Suite guide |
+| [index.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/index.html) (modified) | Added "Safety Hub" nav link to desktop + mobile menus |
+
+---
+
+### How to Run
+
+**1. Backend**
+```bash
+cd backend
+npm install   # already done
+node server.js
+# → Running on http://localhost:3000
+```
+
+**2. Safety Hub Web** — Open in any browser:
+- [safety/index.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/index.html) — Landing page
+- [safety/connect.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/connect.html) — QR code (needs backend running)
+- [safety/dashboard.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/dashboard.html) — Map + SOS (needs backend running)
+
+**3. Auth Mobile App**
+```bash
+cd auth-app
+npm install
+npx expo start
+# Scan Expo QR with Expo Go app on your phone
+```
+
+---
+
+### Verification Results
+
+- ✅ Backend starts on port 3000 — all 7 endpoints registered
+- ✅ `POST /api/nonce` returns valid 256-bit hex nonce with UUID, expiry, and QR payload
+- ✅ All web pages share the Eastern Sojourner dark theme (Inter font, indigo-purple gradients, glassmorphism)
+- ✅ Nav integration: "Safety Hub" link added to main site's desktop and mobile menus
+- ✅ SECURITY_RESEARCH.md covers all 8 sections (threat model → Burp Suite guide)

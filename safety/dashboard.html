@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Dashboard — Eastern Sojourner</title>
+    <meta name="description"
+        content="Real-time geo-fencing map and SOS incident response dashboard for Northeast India tourist safety monitoring.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../states.css">
+    <link rel="stylesheet" href="safety.css">
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+
+    <!-- Navigation -->
+    <nav id="navbar"
+        class="fixed top-0 left-0 right-0 z-50 p-4 transition-all duration-500 bg-slate-900 bg-opacity-95 backdrop-blur-md shadow-2xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-2xl font-bold text-white tracking-wider gradient-text">
+                <i class="fas fa-mountain mr-2"></i>Eastern Sojourner
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="../index.html" class="text-gray-300 hover:text-white transition duration-300 relative group">
+                    Home
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="index.html" class="text-gray-300 hover:text-white transition duration-300 relative group">
+                    <i class="fas fa-shield-alt mr-1"></i>Safety Hub
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="connect.html" class="text-gray-300 hover:text-white transition duration-300 relative group">
+                    <i class="fas fa-fingerprint mr-1"></i>Connect ID
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="dashboard.html" class="text-white font-semibold transition duration-300 relative group">
+                    Dashboard
+                    <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-indigo-500"></span>
+                </a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars fa-2x"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 glass-card rounded-lg p-4">
+            <a href="../index.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded">Home</a>
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded">Safety Hub</a>
+            <a href="connect.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded">Connect
+                ID</a>
+            <a href="dashboard.html"
+                class="block py-2 px-4 text-sm text-white font-semibold hover:bg-gray-700 rounded">Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <main class="pt-24 min-h-screen">
+        <div class="container mx-auto px-6 py-6">
+            <!-- Dashboard Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">Safety Dashboard</h1>
+                    <p class="text-gray-400">Real-time geo-fencing, SOS, and incident monitoring for Northeast India</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <div class="glass-card px-4 py-2 rounded-full flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <span class="text-sm text-gray-300">System Online</span>
+                    </div>
+                    <div class="glass-card px-4 py-2 rounded-full text-sm text-gray-300">
+                        <i class="fas fa-clock mr-1 text-indigo-400"></i>
+                        <span id="live-time"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- ═════════════════════════════════════════════════
+                     LEFT COLUMN: Map (takes 2 columns on large screens)
+                     ═════════════════════════════════════════════════ -->
+                <div class="lg:col-span-2">
+                    <!-- Geo-fence Map -->
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-white"><i
+                                    class="fas fa-map-marked-alt mr-2 text-indigo-400"></i>Geo-Fence Monitor</h2>
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="flex items-center gap-1"><span
+                                        class="w-3 h-3 rounded-full bg-green-500"></span> Safe</span>
+                                <span class="flex items-center gap-1"><span
+                                        class="w-3 h-3 rounded-full bg-yellow-500"></span> Caution</span>
+                                <span class="flex items-center gap-1"><span
+                                        class="w-3 h-3 rounded-full bg-red-500"></span> Restricted</span>
+                            </div>
+                        </div>
+                        <div id="map" class="dashboard-map"></div>
+                    </div>
+
+                    <!-- Zone Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        <div class="glass-card p-4 rounded-xl border-l-4 border-green-500">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <div>
+                                    <div id="safe-count" class="text-2xl font-bold text-white">0</div>
+                                    <div class="text-xs text-gray-400">Safe Zones</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl border-l-4 border-yellow-500">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                                </div>
+                                <div>
+                                    <div id="caution-count" class="text-2xl font-bold text-white">0</div>
+                                    <div class="text-xs text-gray-400">Caution Zones</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl border-l-4 border-red-500">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-ban text-red-400"></i>
+                                </div>
+                                <div>
+                                    <div id="restricted-count" class="text-2xl font-bold text-white">0</div>
+                                    <div class="text-xs text-gray-400">Restricted Zones</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═════════════════════════════════════════════════
+                     RIGHT COLUMN: SOS + Incidents + Status
+                     ═════════════════════════════════════════════════ -->
+                <div class="space-y-6">
+
+                    <!-- SOS Panel -->
+                    <div class="glass-card rounded-xl p-6 border border-red-900/30">
+                        <h2 class="text-lg font-semibold text-white mb-4"><i
+                                class="fas fa-exclamation-circle mr-2 text-red-400"></i>SOS Emergency</h2>
+
+                        <select id="sos-type"
+                            class="w-full mb-3 px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-red-500 focus:outline-none">
+                            <option value="">Select Incident Type</option>
+                            <option value="medical">🏥 Medical Emergency</option>
+                            <option value="security">🔒 Security Threat</option>
+                            <option value="natural_disaster">🌪️ Natural Disaster</option>
+                            <option value="accident">🚗 Accident</option>
+                            <option value="lost">📍 Lost / Stranded</option>
+                            <option value="other">⚠️ Other</option>
+                        </select>
+
+                        <textarea id="sos-message" rows="2" placeholder="Brief description (optional)..."
+                            class="w-full mb-4 px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-500 focus:border-red-500 focus:outline-none resize-none"></textarea>
+
+                        <button id="sos-button" onclick="sendSOS()"
+                            class="w-full sos-btn text-white font-bold py-4 rounded-xl transition duration-300 transform hover:scale-105 text-lg">
+                            <i class="fas fa-bell mr-2"></i>SEND SOS ALERT
+                        </button>
+
+                        <div id="sos-result" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                    </div>
+
+                    <!-- Tourist Status Card -->
+                    <div class="glass-card rounded-xl p-6">
+                        <h2 class="text-lg font-semibold text-white mb-4"><i
+                                class="fas fa-id-card mr-2 text-cyan-400"></i>Digital ID Status</h2>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-sm">Connection:</span>
+                                <span id="id-status"
+                                    class="text-sm px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400">
+                                    <i class="fas fa-clock mr-1"></i>Not Connected
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-sm">Current Zone:</span>
+                                <span id="current-zone" class="text-sm text-gray-300">—</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-sm">Risk Level:</span>
+                                <span id="risk-level" class="text-sm text-gray-300">—</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-sm">GPS:</span>
+                                <span id="user-gps" class="text-sm font-mono text-gray-300">—</span>
+                            </div>
+                        </div>
+                        <a href="connect.html"
+                            class="mt-4 block text-center text-sm text-indigo-400 hover:text-indigo-300 transition">
+                            <i class="fas fa-link mr-1"></i>Connect Digital ID →
+                        </a>
+                    </div>
+
+                    <!-- Active Alerts Feed -->
+                    <div class="glass-card rounded-xl p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-white"><i
+                                    class="fas fa-bell mr-2 text-yellow-400"></i>Active Alerts</h2>
+                            <button onclick="refreshIncidents()"
+                                class="text-xs text-indigo-400 hover:text-indigo-300 transition">
+                                <i class="fas fa-sync-alt mr-1"></i>Refresh
+                            </button>
+                        </div>
+                        <div id="incidents-feed" class="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
+                            <div class="text-center text-gray-500 text-sm py-4">
+                                <i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
+                                <p>No active incidents</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-indigo-800 mt-12">
+        <div class="container mx-auto py-8 px-6 text-center text-gray-500">
+            <p>&copy; <span id="year"></span> Eastern Sojourner Safety Hub. PQC Architecture.</p>
+        </div>
+    </footer>
+
+    <button id="backToTop"
+        class="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-full shadow-lg opacity-0 transition-all duration-300 hover:scale-110 z-50">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // ═════════════════════════════════════════════════════════════════
+        // CONFIGURATION
+        // ═════════════════════════════════════════════════════════════════
+
+        const API_BASE = 'http://localhost:3000';
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Live clock
+        setInterval(() => {
+            document.getElementById('live-time').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+        document.getElementById('live-time').textContent = new Date().toLocaleTimeString();
+
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenuBtn.querySelector('i').className = mobileMenu.classList.contains('hidden') ? 'fas fa-bars fa-2x' : 'fas fa-times fa-2x';
+            });
+        }
+
+        // Back to top
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTopBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+        });
+        backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // ═════════════════════════════════════════════════════════════════
+        // LEAFLET MAP INITIALIZATION
+        // ═════════════════════════════════════════════════════════════════
+
+        // Center map on Northeast India
+        const map = L.map('map', {
+            zoomControl: true,
+            attributionControl: true
+        }).setView([26.0, 92.5], 6);
+
+        // Dark-themed tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 18
+        }).addTo(map);
+
+        // Risk level colors
+        const riskColors = {
+            safe: { color: '#22c55e', fillColor: '#22c55e', fillOpacity: 0.15 },
+            caution: { color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: 0.15 },
+            restricted: { color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.2 }
+        };
+
+        const riskIcons = {
+            safe: '✅',
+            caution: '⚠️',
+            restricted: '🚫'
+        };
+
+        // ═════════════════════════════════════════════════════════════════
+        // LOAD GEO-FENCE ZONES
+        // ═════════════════════════════════════════════════════════════════
+
+        async function loadGeofences() {
+            try {
+                const response = await fetch(`${API_BASE}/api/geofences`);
+                const result = await response.json();
+
+                if (!result.success) return;
+
+                let safeCount = 0, cautionCount = 0, restrictedCount = 0;
+
+                result.data.zones.forEach(zone => {
+                    const style = riskColors[zone.riskLevel] || riskColors.caution;
+                    const icon = riskIcons[zone.riskLevel] || '⚠️';
+
+                    // Draw polygon
+                    const polygon = L.polygon(zone.polygon, {
+                        color: style.color,
+                        fillColor: style.fillColor,
+                        fillOpacity: style.fillOpacity,
+                        weight: 2
+                    }).addTo(map);
+
+                    // Popup with zone info
+                    polygon.bindPopup(`
+                        <div style="font-family: Inter, sans-serif; min-width: 200px;">
+                            <h3 style="margin: 0 0 5px; font-size: 14px; font-weight: 600;">${icon} ${zone.name}</h3>
+                            <p style="margin: 0 0 5px; font-size: 12px; color: #666;">${zone.description}</p>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;
+                                background: ${style.fillColor}22; color: ${style.color}; border: 1px solid ${style.color};">
+                                ${zone.riskLevel.toUpperCase()}
+                            </span>
+                        </div>
+                    `);
+
+                    // Count by risk level
+                    if (zone.riskLevel === 'safe') safeCount++;
+                    else if (zone.riskLevel === 'caution') cautionCount++;
+                    else if (zone.riskLevel === 'restricted') restrictedCount++;
+                });
+
+                // Update counters
+                document.getElementById('safe-count').textContent = safeCount;
+                document.getElementById('caution-count').textContent = cautionCount;
+                document.getElementById('restricted-count').textContent = restrictedCount;
+
+            } catch (err) {
+                console.warn('Failed to load geofences:', err);
+                // Show fallback message on map
+            }
+        }
+
+        // Simulate a tourist marker
+        function addTouristMarker() {
+            const touristIcon = L.divIcon({
+                html: '<div style="background: #6366f1; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(99,102,241,0.6);"></div>',
+                className: 'tourist-marker',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+
+            // Place marker at a sample tourist location (Imphal)
+            const marker = L.marker([24.817, 93.9368], { icon: touristIcon }).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: Inter, sans-serif;">
+                    <h3 style="margin: 0 0 5px; font-size: 13px; font-weight: 600;">📍 Your Location</h3>
+                    <p style="margin: 0; font-size: 11px; color: #666;">Imphal, Manipur</p>
+                    <p style="margin: 3px 0 0; font-size: 11px; color: #22c55e;">● Safe Zone</p>
+                </div>
+            `);
+
+            // Update tourist status card
+            document.getElementById('current-zone').textContent = 'Imphal Valley';
+            document.getElementById('risk-level').innerHTML = '<span class="text-green-400">● Safe</span>';
+            document.getElementById('user-gps').textContent = '24.817, 93.937';
+        }
+
+        // ═════════════════════════════════════════════════════════════════
+        // SOS EMERGENCY
+        // ═════════════════════════════════════════════════════════════════
+
+        async function sendSOS() {
+            const type = document.getElementById('sos-type').value;
+            const message = document.getElementById('sos-message').value;
+            const resultEl = document.getElementById('sos-result');
+
+            if (!type) {
+                resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-yellow-500/20 text-yellow-400';
+                resultEl.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Please select an incident type';
+                resultEl.classList.remove('hidden');
+                return;
+            }
+
+            const sosBtn = document.getElementById('sos-button');
+            sosBtn.disabled = true;
+            sosBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>SENDING...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/sos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: 'dashboard-user',
+                        type,
+                        gps: { lat: 24.817, lng: 93.9368 },
+                        timestamp: new Date().toISOString(),
+                        message
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-green-500/20 text-green-400';
+                    resultEl.innerHTML = `<i class="fas fa-check-circle mr-1"></i> ${result.data.message}<br><span class="text-xs text-gray-400">Incident ID: ${result.data.incidentId} • ETA: ${result.data.responseEta}</span>`;
+                    // Refresh incidents feed
+                    setTimeout(refreshIncidents, 500);
+                } else {
+                    resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-red-500/20 text-red-400';
+                    resultEl.innerHTML = `<i class="fas fa-times-circle mr-1"></i> ${result.message}`;
+                }
+            } catch (err) {
+                resultEl.className = 'mt-4 p-3 rounded-lg text-sm bg-red-500/20 text-red-400';
+                resultEl.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Failed to send SOS — check if the backend server is running on localhost:3000';
+            }
+
+            resultEl.classList.remove('hidden');
+            sosBtn.disabled = false;
+            sosBtn.innerHTML = '<i class="fas fa-bell mr-2"></i>SEND SOS ALERT';
+        }
+
+        // ═════════════════════════════════════════════════════════════════
+        // INCIDENTS FEED
+        // ═════════════════════════════════════════════════════════════════
+
+        async function refreshIncidents() {
+            try {
+                const response = await fetch(`${API_BASE}/api/incidents?limit=10`);
+                const result = await response.json();
+
+                const feed = document.getElementById('incidents-feed');
+
+                if (!result.success || result.data.incidents.length === 0) {
+                    feed.innerHTML = `
+                        <div class="text-center text-gray-500 text-sm py-4">
+                            <i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
+                            <p>No active incidents</p>
+                        </div>`;
+                    return;
+                }
+
+                const typeIcons = {
+                    medical: '🏥',
+                    security: '🔒',
+                    natural_disaster: '🌪️',
+                    accident: '🚗',
+                    lost: '📍',
+                    other: '⚠️'
+                };
+
+                feed.innerHTML = result.data.incidents.map(inc => `
+                    <div class="p-3 rounded-lg bg-gray-800/50 border-l-4 ${inc.status === 'active' ? 'border-red-500' : 'border-gray-600'}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-sm font-semibold text-white">
+                                    ${typeIcons[inc.type] || '⚠️'} ${inc.type.replace('_', ' ').toUpperCase()}
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">${inc.message || 'No details provided'}</div>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full ${inc.status === 'active' ? 'bg-red-500/20 text-red-400' : 'bg-gray-600/20 text-gray-400'}">
+                                ${inc.status}
+                            </span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2">
+                            <i class="fas fa-clock mr-1"></i>${new Date(inc.createdAt).toLocaleTimeString()} •
+                            <i class="fas fa-map-pin mr-1"></i>${inc.gps.lat.toFixed(3)}, ${inc.gps.lng.toFixed(3)} •
+                            ID: ${inc.id}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.warn('Failed to refresh incidents:', err);
+            }
+        }
+
+        // ═════════════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═════════════════════════════════════════════════════════════════
+
+        loadGeofences();
+        addTouristMarker();
+        refreshIncidents();
+
+        // Auto-refresh incidents every 10 seconds
+        setInterval(refreshIncidents, 10000);
+    </script>
+</body>
+
+</html>

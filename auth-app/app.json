@@ -1,0 +1,44 @@
+{
+    "expo": {
+        "name": "Eastern Sojourner Auth",
+        "slug": "eastern-sojourner-auth",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "dark",
+        "splash": {
+            "backgroundColor": "#0f172a",
+            "resizeMode": "contain"
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": false,
+            "bundleIdentifier": "com.easternsojourner.auth",
+            "infoPlist": {
+                "NSFaceIDUsageDescription": "Eastern Sojourner Auth uses Face ID to verify your identity before signing cryptographic challenges.",
+                "NSCameraUsageDescription": "Eastern Sojourner Auth uses the camera to scan QR codes from the Safety Hub.",
+                "NSLocationWhenInUseUsageDescription": "Eastern Sojourner Auth includes your GPS location in signed payloads for safety verification."
+            }
+        },
+        "android": {
+            "adaptiveIcon": {
+                "backgroundColor": "#0f172a"
+            },
+            "package": "com.easternsojourner.auth",
+            "permissions": [
+                "android.permission.USE_BIOMETRIC",
+                "android.permission.USE_FINGERPRINT",
+                "android.permission.CAMERA",
+                "android.permission.ACCESS_FINE_LOCATION"
+            ]
+        },
+        "plugins": [
+            "expo-local-authentication",
+            "expo-camera",
+            "expo-location",
+            "expo-secure-store"
+        ]
+    }
+}

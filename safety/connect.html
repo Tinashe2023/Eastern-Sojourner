@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Digital ID — Safety Hub — Eastern Sojourner</title>
+    <meta name="description"
+        content="Connect your Blockchain Digital ID using quantum-safe cryptography. Scan the QR code with the Eastern Sojourner Auth app to verify your identity.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- QR Code Generator -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../states.css">
+    <link rel="stylesheet" href="safety.css">
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+
+    <!-- Navigation -->
+    <nav id="navbar"
+        class="fixed top-0 left-0 right-0 z-50 p-4 transition-all duration-500 bg-slate-900 bg-opacity-95 backdrop-blur-md shadow-2xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-2xl font-bold text-white tracking-wider gradient-text">
+                <i class="fas fa-mountain mr-2"></i>Eastern Sojourner
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="../index.html" class="text-gray-300 hover:text-white transition duration-300 relative group">
+                    Home
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="index.html" class="text-gray-300 hover:text-white transition duration-300 relative group">
+                    <i class="fas fa-shield-alt mr-1"></i>Safety Hub
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="connect.html" class="text-white font-semibold transition duration-300 relative group">
+                    <i class="fas fa-fingerprint mr-1"></i>Connect ID
+                    <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-indigo-500"></span>
+                </a>
+                <a href="dashboard.html" class="text-gray-300 hover:text-white transition duration-300 relative group">
+                    Dashboard
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars fa-2x"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 glass-card rounded-lg p-4">
+            <a href="../index.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded">Home</a>
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded">Safety Hub</a>
+            <a href="connect.html"
+                class="block py-2 px-4 text-sm text-white font-semibold hover:bg-gray-700 rounded">Connect ID</a>
+            <a href="dashboard.html"
+                class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded">Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 min-h-screen">
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">Connect Your Digital ID</h1>
+                <p class="text-gray-400 max-w-2xl mx-auto">Scan the QR code below with the <strong
+                        class="text-white">Eastern Sojourner Auth</strong> app to verify your identity using biometric
+                    authentication and quantum-safe cryptography.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- QR Code Panel -->
+                <div class="glass-card rounded-xl p-8 text-center">
+                    <h2 class="text-xl font-semibold mb-6 text-white"><i
+                            class="fas fa-qrcode mr-2 text-indigo-400"></i>Quantum-Safe QR Challenge</h2>
+
+                    <!-- QR Code Container -->
+                    <div id="qr-container" class="mb-6">
+                        <div id="qr-loading" class="flex flex-col items-center justify-center py-8">
+                            <div class="qr-spinner mb-4"></div>
+                            <p class="text-gray-400 text-sm">Generating QRNG-backed nonce...</p>
+                        </div>
+                        <div id="qr-code" class="hidden mx-auto inline-block p-4 bg-white rounded-xl"></div>
+                        <div id="qr-error" class="hidden text-red-400 py-8">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+                            <p>Failed to generate QR code</p>
+                            <button onclick="generateQR()"
+                                class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition">Retry</button>
+                        </div>
+                    </div>
+
+                    <!-- Nonce Info -->
+                    <div id="nonce-info" class="hidden text-left glass-card p-4 rounded-lg text-sm">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-400">Nonce ID:</span>
+                            <span id="nonce-id-display"
+                                class="text-indigo-400 font-mono text-xs truncate max-w-[180px]"></span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-400">Expires:</span>
+                            <span id="nonce-expiry" class="text-yellow-400"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Entropy:</span>
+                            <span class="text-green-400">256-bit (QRNG-ready)</span>
+                        </div>
+                    </div>
+
+                    <button onclick="generateQR()" id="regenerate-btn"
+                        class="hidden mt-4 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                        <i class="fas fa-sync-alt mr-1"></i>Generate New QR
+                    </button>
+                </div>
+
+                <!-- Status Panel -->
+                <div class="glass-card rounded-xl p-8">
+                    <h2 class="text-xl font-semibold mb-6 text-white"><i
+                            class="fas fa-satellite-dish mr-2 text-green-400"></i>Verification Status</h2>
+
+                    <!-- Status States -->
+                    <div id="status-waiting" class="text-center py-8">
+                        <div
+                            class="w-20 h-20 mx-auto mb-4 border-4 border-gray-600 border-t-indigo-500 rounded-full animate-spin">
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-300 mb-2">Waiting for Verification</h3>
+                        <p class="text-gray-400 text-sm">Open the <strong>Eastern Sojourner Auth</strong> app on your
+                            phone and scan the QR code.</p>
+                        <div class="mt-4 flex items-center justify-center gap-2 text-gray-500 text-sm">
+                            <span class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                            Polling for response...
+                        </div>
+                    </div>
+
+                    <div id="status-verified" class="hidden text-center py-8">
+                        <div
+                            class="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center verify-success-animation">
+                            <i class="fas fa-check text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-green-400 mb-2">Identity Verified!</h3>
+                        <p class="text-gray-400 text-sm mb-4">Your Digital ID has been successfully connected.</p>
+                        <div id="verified-details" class="text-left glass-card p-4 rounded-lg text-sm space-y-2">
+                        </div>
+                        <a href="dashboard.html"
+                            class="mt-6 inline-block bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Open Dashboard
+                        </a>
+                    </div>
+
+                    <div id="status-failed" class="hidden text-center py-8">
+                        <div class="w-20 h-20 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-times text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2">Verification Failed</h3>
+                        <p class="text-gray-400 text-sm mb-4">The signature could not be verified. Please try again.</p>
+                        <button onclick="generateQR()"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition">
+                            <i class="fas fa-sync-alt mr-2"></i>Try Again
+                        </button>
+                    </div>
+
+                    <!-- Security Info -->
+                    <div class="mt-8 border-t border-gray-700 pt-6">
+                        <h3 class="text-sm font-semibold text-gray-300 mb-3"><i
+                                class="fas fa-info-circle mr-1 text-indigo-400"></i>Security Details</h3>
+                        <ul class="text-xs text-gray-500 space-y-1">
+                            <li><i class="fas fa-check-circle text-green-500 mr-1"></i>Nonce is burned after single use
+                                (replay protection)</li>
+                            <li><i class="fas fa-check-circle text-green-500 mr-1"></i>Signature covers full payload
+                                (User ID + GPS + Timestamp)</li>
+                            <li><i class="fas fa-check-circle text-green-500 mr-1"></i>ECDSA P-256 verification (PQC
+                                ML-DSA ready)</li>
+                            <li><i class="fas fa-check-circle text-green-500 mr-1"></i>Biometric gate required before
+                                signing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="max-w-4xl mx-auto mt-12 glass-card rounded-xl p-8">
+                <h2 class="text-xl font-semibold mb-4 text-white"><i
+                        class="fas fa-mobile-alt mr-2 text-indigo-400"></i>Don't have the app yet?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-300 mb-2">Install Eastern Sojourner Auth</h3>
+                        <ol class="text-gray-400 text-sm space-y-2">
+                            <li class="flex items-start gap-2">
+                                <span
+                                    class="bg-indigo-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">1</span>
+                                Clone the <code class="bg-gray-800 px-1 rounded">auth-app/</code> directory
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span
+                                    class="bg-indigo-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</span>
+                                Run <code class="bg-gray-800 px-1 rounded">npm install</code> then <code
+                                    class="bg-gray-800 px-1 rounded">npx expo start</code>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span
+                                    class="bg-indigo-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</span>
+                                Scan the Expo QR code with Expo Go on your phone
+                            </li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-300 mb-2">Test Without a Phone</h3>
+                        <p class="text-gray-400 text-sm">Use the backend's test endpoint to simulate the mobile app
+                            verification:</p>
+                        <pre class="bg-gray-800 rounded-lg p-3 mt-2 text-xs text-green-400 overflow-x-auto"><code>curl -X POST http://localhost:3000/api/test/sign \
+  -H "Content-Type: application/json" \
+  -d '{"nonceId": "&lt;YOUR_NONCE_ID&gt;"}'</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-indigo-800 mt-12">
+        <div class="container mx-auto py-8 px-6 text-center text-gray-500">
+            <p>&copy; <span id="year"></span> Eastern Sojourner Safety Hub. PQC Architecture.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // ── Mobile menu ──
+        const mobileMenuBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenuBtn.querySelector('i').className = mobileMenu.classList.contains('hidden') ? 'fas fa-bars fa-2x' : 'fas fa-times fa-2x';
+            });
+        }
+
+        // ── Configuration ──
+        const API_BASE = 'http://localhost:3000';
+        let currentNonceId = null;
+        let pollInterval = null;
+
+        // ── Generate QR Code ──
+        async function generateQR() {
+            // Reset UI
+            document.getElementById('qr-loading').classList.remove('hidden');
+            document.getElementById('qr-code').classList.add('hidden');
+            document.getElementById('qr-error').classList.add('hidden');
+            document.getElementById('nonce-info').classList.add('hidden');
+            document.getElementById('regenerate-btn').classList.add('hidden');
+            resetStatus();
+
+            // Stop any existing polling
+            if (pollInterval) clearInterval(pollInterval);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/nonce`, { method: 'POST' });
+                const result = await response.json();
+
+                if (!result.success) throw new Error(result.message);
+
+                currentNonceId = result.data.nonceId;
+
+                // Generate QR code
+                const qrContainer = document.getElementById('qr-code');
+                qrContainer.innerHTML = '';
+                const canvas = document.createElement('canvas');
+                await QRCode.toCanvas(canvas, result.data.qrPayload, {
+                    width: 220,
+                    margin: 2,
+                    color: { dark: '#1e1b4b', light: '#ffffff' }
+                });
+                qrContainer.appendChild(canvas);
+
+                // Show QR
+                document.getElementById('qr-loading').classList.add('hidden');
+                qrContainer.classList.remove('hidden');
+                document.getElementById('nonce-info').classList.remove('hidden');
+                document.getElementById('regenerate-btn').classList.remove('hidden');
+
+                // Display nonce info
+                document.getElementById('nonce-id-display').textContent = result.data.nonceId;
+                const expiryDate = new Date(result.data.expiresAt);
+                document.getElementById('nonce-expiry').textContent = expiryDate.toLocaleTimeString();
+
+                // Start polling for verification
+                startPolling();
+
+            } catch (err) {
+                console.error('QR generation failed:', err);
+                document.getElementById('qr-loading').classList.add('hidden');
+                document.getElementById('qr-error').classList.remove('hidden');
+            }
+        }
+
+        // ── Poll for verification ──
+        function startPolling() {
+            pollInterval = setInterval(async () => {
+                if (!currentNonceId) return;
+
+                try {
+                    const response = await fetch(`${API_BASE}/api/verify-status/${currentNonceId}`);
+                    const result = await response.json();
+
+                    if (result.success && result.data.verified) {
+                        clearInterval(pollInterval);
+                        showVerified(result.data.verificationData);
+                    }
+                } catch (err) {
+                    console.warn('Polling error:', err);
+                }
+            }, 2000); // Poll every 2 seconds
+        }
+
+        // ── Status display helpers ──
+        function resetStatus() {
+            document.getElementById('status-waiting').classList.remove('hidden');
+            document.getElementById('status-verified').classList.add('hidden');
+            document.getElementById('status-failed').classList.add('hidden');
+        }
+
+        function showVerified(data) {
+            document.getElementById('status-waiting').classList.add('hidden');
+            document.getElementById('status-verified').classList.remove('hidden');
+
+            const details = document.getElementById('verified-details');
+            details.innerHTML = `
+                <div class="flex justify-between"><span class="text-gray-400">User ID:</span><span class="text-green-400 font-mono text-xs">${data.userId || 'N/A'}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Location:</span><span class="text-green-400">${data.gps ? `${data.gps.lat}, ${data.gps.lng}` : 'N/A'}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Verified at:</span><span class="text-green-400">${data.verifiedAt || new Date().toISOString()}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Signature:</span><span class="text-green-400">ECDSA P-256 ✓</span></div>
+            `;
+        }
+
+        // Auto-generate QR on page load
+        generateQR();
+    </script>
+</body>
+
+</html>

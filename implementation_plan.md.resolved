@@ -1,0 +1,204 @@
+# Smart Tourist Safety Monitoring & Incident Response System
+
+Build the **Safety Hub** web platform and the **Eastern Sojourner Auth** mobile app, with Post-Quantum Cryptography (PQC) architecture, biometric security, and geo-fencing.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Scope Clarification**: This plan implements a fully functional front-end demo ecosystem with a local Node.js backend. The QRNG and ML-DSA (PQC) components are architected as **clearly documented placeholders** — pluggable when hardware/library support is available. No actual quantum hardware is needed.
+
+> [!WARNING]
+> **New directories will be created**: `safety/` (web), `auth-app/` (mobile), and `backend/` (Node.js server) — all inside the existing `Eastern Sojourner` project root.
+
+---
+
+## Proposed Changes
+
+### Component 1: Safety Hub Web Platform (`/safety`)
+
+The web pages will replicate the Eastern Sojourner dark theme (Inter font, indigo-purple gradients, glassmorphism cards, Tailwind CDN) and share the Netflix-style navigation bar.
+
+#### [NEW] [index.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/index.html)
+- Safety Hub landing page with hero section
+- "Connect Your Digital ID" CTA button
+- Overview of safety features (Geo-fencing, SOS, Blockchain ID)
+- Shared navbar with "Destinations" dropdown + active "Safety Hub" link
+- Links to `/safety/connect.html` and `/safety/dashboard.html`
+
+#### [NEW] [connect.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/connect.html)
+- **Connect Digital ID** page
+- Generates a QR code (via `qrcode.js` CDN) containing a server-issued nonce
+- Displays QR code with instructions to scan via the Auth app
+- Polls backend (`/api/verify-status/:nonceId`) for signature verification result
+- Shows success/failure status with animated transitions
+
+#### [NEW] [dashboard.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/dashboard.html)
+- **Safety Dashboard** — only accessible after Digital ID is verified
+- **Geo-fence Map**: Leaflet.js map displaying Northeast India with configurable geo-fence zones (safe/caution/restricted), tourist position marker
+- **SOS Incident Response Panel**: Emergency button, incident type selector, auto-captures GPS + timestamp, sends alert payload
+- **Active Alerts Feed**: Live-updating panel showing recent safety incidents
+- **Tourist Status Card**: Shows verified Digital ID info, current zone status
+
+#### [NEW] [safety.css](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/safety.css)
+- Safety Hub-specific styles extending the existing design system
+- Map container styles, SOS button pulse animation, dashboard grid layout
+- Status indicator animations (safe=green, caution=amber, danger=red)
+
+#### [NEW] [safety.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/safety/safety.js)
+- QR code generation (calls backend for nonce, renders with qrcode.js)
+- Polling logic for verification status
+- Leaflet map initialization with geo-fence polygon layers
+- SOS button handler with payload construction
+- Dashboard data refresh logic
+
+---
+
+### Component 2: Node.js Backend (`/backend`)
+
+The server that bridges the web platform and the mobile app.
+
+#### [NEW] [server.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/backend/server.js)
+- Express.js REST API server
+- **Endpoints**:
+  - `POST /api/nonce` — Generate a cryptographic nonce (with QRNG placeholder), store in memory with TTL, return `{ nonceId, nonce, expiresAt }`
+  - `POST /api/verify` — Accept `{ nonceId, userId, signature, publicKey, gps, timestamp }`, verify ECDSA signature covers entire payload, **burn nonce after one use** (replay protection), return `{ verified: true/false }`
+  - `GET /api/verify-status/:nonceId` — Check if a nonce has been verified (for web polling)
+  - `POST /api/sos` — Accept SOS incident report `{ userId, type, gps, timestamp, message }`, log and broadcast
+  - `GET /api/geofences` — Return geo-fence zone definitions (polygons + risk levels)
+- All endpoints return clean JSON (Burp Suite-ready)
+- CORS enabled for local development
+
+#### [NEW] [crypto-utils.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/backend/crypto-utils.js)
+- `generateNonce()` — Uses `crypto.randomBytes(32)` with **QRNG placeholder comment** documenting how to swap in quantum random source
+- `verifySignature(payload, signature, publicKey)` — ECDSA P-256 verification
+- **PQC placeholder**: Documented architecture for ML-DSA (CRYSTALS-Dilithium) signature verification when `liboqs` or NIST PQC libraries become Node-ready
+- Nonce store with automatic TTL expiration
+
+#### [NEW] [package.json](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/backend/package.json)
+- Dependencies: `express`, `cors`, `uuid`, `elliptic` (ECDSA)
+
+---
+
+### Component 3: Eastern Sojourner Auth Mobile App (`/auth-app`)
+
+React Native / Expo mobile application.
+
+#### [NEW] [auth-app/](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/)
+- Scaffolded with `npx create-expo-app@latest ./`
+- Key dependencies: `expo-local-authentication`, `expo-camera` (barcode scanner), `expo-secure-store`, `expo-location`, `react-native-get-random-values`
+
+#### [NEW] [App.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/App.js)
+- Root component with navigation between screens
+- Global context for authentication state and key pair
+
+#### [NEW] [screens/BiometricGate.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/screens/BiometricGate.js)
+- **Biometric Identity Gate** — requires FaceID or Fingerprint before proceeding
+- Uses `expo-local-authentication` for `authenticateAsync()`
+- Shows branded splash with Eastern Sojourner logo
+- Blocks all cryptographic operations until biometric is verified
+
+#### [NEW] [screens/ScanScreen.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/screens/ScanScreen.js)
+- QR code scanner using `expo-camera`
+- Extracts nonce data from scanned QR code
+- Triggers biometric re-verification before signing
+- Calls `signNonce()` then POSTs to backend `/api/verify`
+
+#### [NEW] [screens/StatusScreen.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/screens/StatusScreen.js)
+- Displays verification result (success/failure)
+- Shows signed payload details
+
+#### [NEW] [utils/crypto.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/utils/crypto.js)
+- Key pair generation (ECDSA P-256) stored via `expo-secure-store`
+- `signPayload(payload, privateKey)` — Signs concatenated `userId + nonce + gps + timestamp`
+- **ML-DSA / PQC placeholder**: Extensive comments documenting hybrid signing architecture where both classical ECDSA and post-quantum ML-DSA signatures are generated side-by-side
+
+#### [NEW] [utils/api.js](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/auth-app/utils/api.js)
+- API client for communicating with the backend
+- `postVerification({ nonceId, userId, signature, publicKey, gps, timestamp })`
+
+---
+
+### Component 4: Security Documentation
+
+#### [NEW] [SECURITY_RESEARCH.md](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/SECURITY_RESEARCH.md)
+- **Threat Model** — Classical attacks (MITM interception, replay, signature forgery)
+- **Replay Protection** — One-time nonce burn mechanism with TTL
+- **Integrity** — Full payload signing (userId + GPS + timestamp)
+- **PQC Readiness** — How ML-DSA placeholders protect against quantum threats to ECDSA
+- **QRNG Architecture** — Why quantum entropy matters and the pluggable design
+- **Burp Suite Testing Guide** — How to intercept and test all endpoints
+- **Biometric Security** — Device-local biometric verification model
+
+---
+
+### Component 5: Navigation Integration
+
+#### [MODIFY] [index.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/index.html)
+- Add "Safety Hub" link to the main navbar (desktop + mobile menu)
+- Styled with a shield icon and subtle security badge
+
+---
+
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     SAFETY HUB (Web Browser)                    │
+│  ┌──────────┐   ┌──────────────┐   ┌─────────────────────────┐ │
+│  │ Landing   │──▶│ Connect ID   │──▶│ Safety Dashboard        │ │
+│  │ Page      │   │ (QR Code)    │   │ • Leaflet Map + Fences  │ │
+│  └──────────┘   └──────┬───────┘   │ • SOS Panel             │ │
+│                         │ polls    │ • Alert Feed             │ │
+│                         ▼          └─────────────────────────┘ │
+└─────────────────────────┼──────────────────────────────────────┘
+                          │ REST API
+┌─────────────────────────┼──────────────────────────────────────┐
+│                   NODE.JS BACKEND                               │
+│  ┌──────────┐   ┌──────┴───────┐   ┌─────────────────────────┐ │
+│  │ QRNG     │──▶│ Nonce Store  │◀──│ Signature Verifier      │ │
+│  │ Placeholder│ │ (TTL + Burn) │   │ (ECDSA + PQC placeholder│ │
+│  └──────────┘   └──────────────┘   └─────────────────────────┘ │
+│                         ▲                                       │
+└─────────────────────────┼──────────────────────────────────────┘
+                          │ POST /api/verify
+┌─────────────────────────┼──────────────────────────────────────┐
+│              EASTERN SOJOURNER AUTH (Mobile App)                 │
+│  ┌──────────┐   ┌──────┴───────┐   ┌─────────────────────────┐ │
+│  │ Biometric │──▶│ QR Scanner   │──▶│ ECDSA Signer            │ │
+│  │ Gate      │   │              │   │ (+ ML-DSA placeholder)  │ │
+│  │ (FaceID)  │   └──────────────┘   │ Secure Enclave Keys     │ │
+│  └──────────┘                       └─────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Verification Plan
+
+### Automated Tests
+
+1. **Backend API tests** — Run from terminal after `cd backend && npm start`:
+   ```
+   # Test nonce generation
+   curl -X POST http://localhost:3000/api/nonce
+
+   # Test replay protection (verify same nonce twice — second should fail)
+   curl -X POST http://localhost:3000/api/verify -H "Content-Type: application/json" -d "{...signed payload...}"
+   curl -X POST http://localhost:3000/api/verify -H "Content-Type: application/json" -d "{...same payload...}"
+
+   # Test geo-fence endpoint
+   curl http://localhost:3000/api/geofences
+   ```
+
+2. **Web platform** — Open `safety/index.html` in browser, verify:
+   - Navbar matches Eastern Sojourner theme
+   - QR code generates on connect page
+   - Dashboard map renders with geo-fence polygons
+
+### Manual Verification
+
+1. **Theme consistency**: Open the main [index.html](file:///c:/Users/TinasheHando/Documents/Eastern%20Sojourner/index.html) and `safety/index.html` side by side — verify the header, color palette, fonts, and glassmorphism match.
+2. **QR flow**: Start backend (`node backend/server.js`), open `safety/connect.html`, verify QR code appears with nonce data.
+3. **Mobile app**: The Expo app requires a physical device or emulator. Run `cd auth-app && npx expo start`, verify biometric gate appears, QR scanner opens, and signing flow completes.
+4. **Burp Suite readiness**: Verify all API responses are clean JSON with proper Content-Type headers.
+5. **Security doc review**: Read `SECURITY_RESEARCH.md` and verify all threat categories are addressed.
