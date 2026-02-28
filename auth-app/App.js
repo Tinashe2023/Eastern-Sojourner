@@ -29,7 +29,7 @@ global.Buffer = Buffer;
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import BiometricGate from './screens/BiometricGate';
@@ -42,8 +42,9 @@ const Stack = createNativeStackNavigator();
  * Dark theme matching the Eastern Sojourner brand palette.
  */
 const DarkTheme = {
-    dark: true,
+    ...NavigationDarkTheme,
     colors: {
+        ...NavigationDarkTheme.colors,
         primary: '#6366f1',
         background: '#0f172a',
         card: '#1e293b',

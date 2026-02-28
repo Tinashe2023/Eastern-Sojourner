@@ -260,7 +260,16 @@ app.post('/api/verify', (req, res) => {
             timestamp
         );
 
+        console.log('--- VERIFICATION DEBUG ---');
+        console.log('1. Canonical Payload:', canonicalPayload);
+        console.log('2. Public Key Length:', publicKey ? publicKey.length : 'MISSING');
+        console.log('3. Signature Length :', signature ? signature.length : 'MISSING');
+        console.log('4. GPS Object       :', gps);
+
         const isValid = verifySignature(canonicalPayload, signature, publicKey);
+
+        console.log('5. Verify Result    :', isValid);
+        console.log('--------------------------');
 
         if (isValid) {
             // Mark nonce as verified for web polling

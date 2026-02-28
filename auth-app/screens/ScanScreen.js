@@ -71,6 +71,7 @@ export default function ScanScreen({ navigation }) {
                 promptMessage: 'Verify identity to sign this challenge',
                 cancelLabel: 'Cancel',
                 disableDeviceFallback: false,
+                fallbackLabel: 'Use Passcode',
             });
 
             if (!bioResult.success) {

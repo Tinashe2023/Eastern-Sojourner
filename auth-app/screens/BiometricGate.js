@@ -40,19 +40,25 @@ export default function BiometricGate({ navigation }) {
             const enrolled = await LocalAuthentication.isEnrolledAsync();
             const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
 
-            setIsAvailable(compatible && enrolled);
-
-            // Determine biometric type
-            if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
-                setBiometricType('FaceID');
-            } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-                setBiometricType('Fingerprint');
+            if (compatible && enrolled) {
+                if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+                    setBiometricType('FaceID');
+                } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+                    setBiometricType('Fingerprint');
+                } else {
+                    setBiometricType('Biometric');
+                }
             } else {
-                setBiometricType('Biometric');
+                // Fallback to Device PIN/Pattern/Password if no biometrics
+                setBiometricType('Screen Lock');
             }
+
+            // Always available because we allow Device PIN fallback
+            setIsAvailable(true);
         } catch (err) {
             console.error('[BIO] Hardware check failed:', err);
-            setIsAvailable(false);
+            setBiometricType('Screen Lock');
+            setIsAvailable(true);
         }
         setIsChecking(false);
     }
@@ -114,9 +120,9 @@ export default function BiometricGate({ navigation }) {
 
                 <Text style={styles.title}>Identity Verification</Text>
                 <Text style={styles.subtitle}>
-                    {isAvailable
-                        ? `Verify with ${biometricType} to access your Digital ID and sign cryptographic challenges.`
-                        : 'Biometric authentication is not available on this device. Please enable Face ID or Fingerprint in your device settings.'}
+                    {biometricType === 'Screen Lock'
+                        ? 'Biometric authentication is not available. You can verify using your device screen lock (PIN, Pattern, or Password).'
+                        : `Verify with ${biometricType} to access your Digital ID and sign cryptographic challenges.`}
                 </Text>
 
                 {isAvailable ? (
@@ -126,14 +132,7 @@ export default function BiometricGate({ navigation }) {
                             Verify with {biometricType}
                         </Text>
                     </TouchableOpacity>
-                ) : (
-                    <TouchableOpacity
-                        style={[styles.authButton, styles.disabledButton]}
-                        disabled
-                    >
-                        <Text style={styles.authButtonText}>Biometrics Unavailable</Text>
-                    </TouchableOpacity>
-                )}
+                ) : null}
 
                 {/* Security badge */}
                 <View style={styles.securityBadge}>
