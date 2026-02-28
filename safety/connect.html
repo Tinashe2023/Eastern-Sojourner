@@ -15,8 +15,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- QR Code Generator -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- QR Code: uses api.qrserver.com (no JS library needed) -->
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../states.css">
@@ -270,17 +269,17 @@
 
                 currentNonceId = result.data.nonceId;
 
-                // Generate QR code using qrcodejs
+                // Generate QR code using image API (most reliable)
                 const qrContainer = document.getElementById('qr-code');
                 qrContainer.innerHTML = '';
-                new QRCode(qrContainer, {
-                    text: result.data.qrPayload,
-                    width: 220,
-                    height: 220,
-                    colorDark: '#1e1b4b',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.M
-                });
+                const qrImg = document.createElement('img');
+                const encodedPayload = encodeURIComponent(result.data.qrPayload);
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=1e1b4b&bgcolor=ffffff&data=${encodedPayload}`;
+                qrImg.alt = 'Safety Hub QR Code';
+                qrImg.width = 220;
+                qrImg.height = 220;
+                qrImg.style.borderRadius = '8px';
+                qrContainer.appendChild(qrImg);
 
                 // Show QR
                 document.getElementById('qr-loading').classList.add('hidden');
