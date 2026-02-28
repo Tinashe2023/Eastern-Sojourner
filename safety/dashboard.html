@@ -363,11 +363,28 @@
             }
         }
 
+        // Helper function: Ray-casting algorithm to check if point is in polygon
+        function isPointInPolygon(point, vs) {
+            let x = point[1], y = point[0]; // GeoJSON is usually [lng, lat], but Leaflet is [lat, lng]
+            let inside = false;
+            for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                let xi = vs[i][1], yi = vs[i][0];
+                let xj = vs[j][1], yj = vs[j][0];
+
+                let intersect = ((yi > y) !== (yj > y))
+                    && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
         // Simulate a tourist marker
-        function addTouristMarker() {
+        async function addTouristMarker() {
             let lat = 24.817;
             let lng = 93.9368;
-            let zoneName = 'Imphal Valley';
+            let zoneName = 'Unknown Location';
+            let riskLevel = 'unknown';
+            let riskTheme = { color: 'gray-400', icon: '❓', text: 'Unknown' };
 
             // Check local storage for actual connected ID data
             const isConnected = localStorage.getItem('digital_id_connected') === 'true';
@@ -392,6 +409,35 @@
                 statusEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Connected (ECDSA)';
             }
 
+            // Fetch zones to check where the user is
+            try {
+                const response = await fetch(`${API_BASE}/api/geofences`);
+                const result = await response.json();
+                if (result.success) {
+                    let foundZone = false;
+                    for (const zone of result.data.zones) {
+                        if (isPointInPolygon([lat, lng], zone.polygon)) {
+                            zoneName = zone.name;
+                            riskLevel = zone.riskLevel;
+                            foundZone = true;
+                            break;
+                        }
+                    }
+                    if (!foundZone) {
+                        zoneName = 'Outside Protected Zones';
+                        riskLevel = 'unknown';
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to fetch zones for location check');
+            }
+
+            // Determine Risk Theme
+            if (riskLevel === 'safe') riskTheme = { color: 'green-400', icon: '●', text: 'Safe' };
+            else if (riskLevel === 'caution') riskTheme = { color: 'yellow-400', icon: '⚠️', text: 'Caution' };
+            else if (riskLevel === 'restricted') riskTheme = { color: 'red-400', icon: '🚫', text: 'Restricted' };
+            else riskTheme = { color: 'gray-400', icon: '●', text: 'Unmonitored' };
+
             const touristIcon = L.divIcon({
                 html: '<div style="background: #6366f1; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(99,102,241,0.6);"></div>',
                 className: 'tourist-marker',
@@ -405,13 +451,18 @@
                 <div style="font-family: Inter, sans-serif;">
                     <h3 style="margin: 0 0 5px; font-size: 13px; font-weight: 600;">📍 Your Location</h3>
                     <p style="margin: 0; font-size: 11px; color: #666;">${zoneName}</p>
-                    <p style="margin: 3px 0 0; font-size: 11px; color: #22c55e;">● Safe Zone</p>
+                    <p style="margin: 3px 0 0; font-size: 11px; color: #22c55e;">${riskTheme.icon} ${riskTheme.text} Zone</p>
                 </div>
             `);
 
+            // Pan map to the user if they are verified
+            if (isConnected) {
+                map.setView([lat, lng], 10);
+            }
+
             // Update tourist status card
             document.getElementById('current-zone').textContent = zoneName;
-            document.getElementById('risk-level').innerHTML = '<span class="text-green-400">● Safe</span>';
+            document.getElementById('risk-level').innerHTML = `<span class="text-${riskTheme.color}">${riskTheme.icon} ${riskTheme.text}</span>`;
             document.getElementById('user-gps').textContent = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
         }
 
