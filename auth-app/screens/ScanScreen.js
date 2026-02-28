@@ -185,17 +185,17 @@ export default function ScanScreen({ navigation }) {
                         barcodeTypes: ['qr'],
                     }}
                     onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                >
-                    {/* Scan overlay */}
-                    <View style={styles.overlay}>
-                        <View style={styles.scanFrame}>
-                            <View style={[styles.corner, styles.topLeft]} />
-                            <View style={[styles.corner, styles.topRight]} />
-                            <View style={[styles.corner, styles.bottomLeft]} />
-                            <View style={[styles.corner, styles.bottomRight]} />
-                        </View>
+                />
+
+                {/* Scan overlay (Moved outside CameraView for SDK 54 compatibility) */}
+                <View style={[StyleSheet.absoluteFill, styles.overlay]}>
+                    <View style={styles.scanFrame}>
+                        <View style={[styles.corner, styles.topLeft]} />
+                        <View style={[styles.corner, styles.topRight]} />
+                        <View style={[styles.corner, styles.bottomLeft]} />
+                        <View style={[styles.corner, styles.bottomRight]} />
                     </View>
-                </CameraView>
+                </View>
             </View>
 
             {/* Status Bar */}
