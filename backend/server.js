@@ -164,6 +164,106 @@ const GEOFENCE_ZONES = [
             [27.3000, 88.5500]
         ],
         description: 'Mountain terrain — weather can change rapidly, landslide risk during monsoon'
+    },
+
+    // ── LPU Campus Zones (Punjab — Demo / Testing) ──────────────────────
+    {
+        id: 'lpu-block-36',
+        name: 'LPU Block 36 — School of Electronics',
+        riskLevel: 'safe',
+        color: '#22c55e',
+        polygon: [
+            [31.251474, 75.703662],
+            [31.252074, 75.703662],
+            [31.252074, 75.704262],
+            [31.251474, 75.704262],
+            [31.251474, 75.703662]
+        ],
+        description: 'School of Electronics, Block 36 — current demo location'
+    },
+    {
+        id: 'lpu-block-32',
+        name: 'LPU Block 32 — Division of Career Services',
+        riskLevel: 'safe',
+        color: '#22c55e',
+        polygon: [
+            [31.251840, 75.704536],
+            [31.252440, 75.704536],
+            [31.252440, 75.705136],
+            [31.251840, 75.705136],
+            [31.251840, 75.704536]
+        ],
+        description: 'Block 32, Division of Career Services'
+    },
+    {
+        id: 'lpu-block-29',
+        name: 'LPU Block 29 — Admin Block',
+        riskLevel: 'caution',
+        color: '#f59e0b',
+        polygon: [
+            [31.256700, 75.691700],
+            [31.257300, 75.691700],
+            [31.257300, 75.692300],
+            [31.256700, 75.692300],
+            [31.256700, 75.691700]
+        ],
+        description: 'Block 29, Admin Block — restricted access area'
+    },
+    {
+        id: 'lpu-sewage-tanks',
+        name: 'LPU Sewage Treatment Tanks',
+        riskLevel: 'restricted',
+        color: '#ef4444',
+        polygon: [
+            [31.251070, 75.702525],
+            [31.251670, 75.702525],
+            [31.251670, 75.703125],
+            [31.251070, 75.703125],
+            [31.251070, 75.702525]
+        ],
+        description: 'Sewage treatment plant — hazardous area, do not enter'
+    },
+    {
+        id: 'lpu-auditorium',
+        name: 'LPU Auditorium',
+        riskLevel: 'safe',
+        color: '#22c55e',
+        polygon: [
+            [31.251733, 75.703767],
+            [31.252333, 75.703767],
+            [31.252333, 75.704367],
+            [31.251733, 75.704367],
+            [31.251733, 75.703767]
+        ],
+        description: 'LPU Auditorium — event and assembly area'
+    },
+    {
+        id: 'lpu-block-26',
+        name: 'LPU Block 26 — Computing Block',
+        riskLevel: 'safe',
+        color: '#22c55e',
+        polygon: [
+            [31.252342, 75.702810],
+            [31.252942, 75.702810],
+            [31.252942, 75.703410],
+            [31.252342, 75.703410],
+            [31.252342, 75.702810]
+        ],
+        description: 'Block 26, Computing Block'
+    },
+    {
+        id: 'lpu-block-34',
+        name: 'LPU Block 34 — School of Computer Science',
+        riskLevel: 'safe',
+        color: '#22c55e',
+        polygon: [
+            [31.251050, 75.704300],
+            [31.251650, 75.704300],
+            [31.251650, 75.704900],
+            [31.251050, 75.704900],
+            [31.251050, 75.704300]
+        ],
+        description: 'Block 34, School of Computer Science'
     }
 ];
 
@@ -405,7 +505,7 @@ app.get('/api/geofences', (req, res) => {
         data: {
             zones: GEOFENCE_ZONES,
             lastUpdated: new Date().toISOString(),
-            region: 'Northeast India'
+            region: 'Northeast India & LPU Campus (Demo)'
         }
     });
 });
