@@ -11,7 +11,7 @@
         "cors": "^2.8.5",
         "elliptic": "^6.5.7",
         "express": "^4.21.2",
-        "uuid": "^11.1.0"
+        "uuid": "^14.0.0"
     },
     "author": "Tinashe Hando",
     "license": "MIT"
